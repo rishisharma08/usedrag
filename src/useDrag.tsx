@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useRef, useState, type RefObject } from 'react'
-import type { Pos } from './types';
+import type { DragDirections, Pos } from './types';
 
 interface Props {
   dragElem: RefObject<HTMLElement | null>,
   boundElem?: RefObject<HTMLElement | null>,
   checkBounds?: ( dragElem: HTMLElement, pos: Pos, delta: Pos, boundElem?: HTMLElement | null ) => Pos,
+  allowedDirections?: DragDirections[],
 }
 
 const checkBoundsDefault = ( dragElem: HTMLElement, pos: Pos, delta: Pos, boundElem?: HTMLElement | null ) => {
@@ -15,6 +16,7 @@ const useDrag = ({
   dragElem,
   boundElem,
   checkBounds = checkBoundsDefault,
+  allowedDirections = [ "x", "y" ],
 }: Props) => {
   const isDraggingRef = useRef<boolean>(false);
   const mouseDownTransformRef = useRef<Pos>({x: 0, y:0});
@@ -45,8 +47,8 @@ const useDrag = ({
           clientY = e.touches[0].clientY;
         }
         const newPos = {
-          x: delta.x + clientX,
-          y: delta.y + clientY,
+          x: allowedDirections.includes( "x" ) ? delta.x + clientX : mouseDownTransformRef.current.x,
+          y: allowedDirections.includes( "y" ) ? delta.y + clientY : mouseDownTransformRef.current.y,
         };
         if( checkBounds ){
           transformSet( checkBounds( dragElem.current, newPos, delta, boundElem ? boundElem.current : null ) );
@@ -55,7 +57,7 @@ const useDrag = ({
         }
       }
     }
-  }, [dragElem, boundElem, checkBounds]);
+  }, [dragElem, boundElem, checkBounds, allowedDirections]);
 
   const handleMouseUp = useCallback(() => {
     isDraggingRef.current = false;
@@ -93,6 +95,9 @@ const useDrag = ({
       element.addEventListener( "touchmove", handleMouseMove );
       window.addEventListener( "touchend", handleMouseUp );
       window.addEventListener("touchcancel", handleMouseUp);
+      allowedDirections.forEach(( dir )=>{
+        element.classList.add( `drag-direction-${dir}` );
+      });
     }
     return () => {
       if( element ){
@@ -103,9 +108,12 @@ const useDrag = ({
         element.removeEventListener( "touchmove", handleMouseMove );
         window.removeEventListener( "touchend", handleMouseUp );
         window.removeEventListener( "touchcancel", handleMouseUp );
+        allowedDirections.forEach(( dir )=>{
+          element.classList.remove( `drag-direction-${dir}` );
+        });
       }
     };
-  }, [dragElem, handleMouseDown, handleMouseMove, handleMouseUp]);
+  }, [allowedDirections, dragElem, handleMouseDown, handleMouseMove, handleMouseUp]);
 
   return {
     transform,

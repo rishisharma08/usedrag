@@ -58,9 +58,17 @@
 .dragme{
   width: 100px;
   height: 100px;
-  cursor: move;
   user-select: none;
   background-color: rgba(255, 192, 250, 0.3);
+}
+.dragme.drag-direction-x.drag-direction-y{
+  cursor: move;
+}
+.dragme.drag-direction-x:not(.drag-direction-y){
+  cursor: ew-resize;
+}
+.dragme.drag-direction-y:not(.drag-direction-x){
+  cursor: ns-resize;
 }
 .dragme.dragging{
   cursor: grab;
@@ -68,16 +76,18 @@
 .group h5{
   margin-bottom: 10px;
 }
-select{
+select.select-styled{
   width: 100%;
   padding: 10px;
+  cursor: pointer;
+  border: 1px solid rgba( 0,0,0,0.2);
+}
+select:not([multiple]){
   appearance: none;
   background-image: url( "/down-arrow.svg" );
   background-position: calc(100% - 10px) 50%;
   background-size: 30px;
   background-repeat: no-repeat;
-  cursor: pointer;
-  border: 1px solid rgba( 0,0,0,0.2);
 }
 @media (max-width: 600px) {
   .group{

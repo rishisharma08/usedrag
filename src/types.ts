@@ -4,3 +4,5 @@ export interface Pos {
 };
 
 export type ObjectPositionValues = "cover" | "contain";
+
+export type DragDirections = "x" | "y";

@@ -7,6 +7,7 @@ A React hook for adding drag functionality to HTML elements with optional bounda
 - Simple drag-and-drop functionality for any HTML element
 - Touch event support for mobile devices
 - Optional boundary constraints to keep elements within a container
+- Restrict dragging to specific directions (x-axis only, y-axis only, or both)
 - Custom boundary checking logic support
 - Built-in "dragging" class for styling during drag operations
 - Transform-based positioning (x, y coordinates)
@@ -29,6 +30,7 @@ npm install
 | `dragElem` | `RefObject<HTMLElement>` | Yes | Reference to the element to be dragged |
 | `boundElem` | `RefObject<HTMLElement>` | No | Reference to the boundary container element |
 | `checkBounds` | `(dragElem: HTMLElement, pos: Pos, delta: Pos, boundElem?: HTMLElement \| null) => Pos` | No | Custom function to validate and constrain drag positions |
+| `allowedDirections` | `DragDirections[]` | No | Array specifying which directions the element can be dragged. Default: `["x", "y"]` |
 
 #### Return Values
 
@@ -44,6 +46,8 @@ interface Pos {
   x: number;
   y: number;
 }
+
+type DragDirections = "x" | "y";
 ```
 
 ## Usage
@@ -134,6 +138,36 @@ function App() {
   );
 }
 ```
+
+### Restricting Drag Directions
+
+```tsx
+import { useRef } from 'react';
+import useDrag from './useDrag';
+
+function App() {
+  const dragRef = useRef<HTMLDivElement>(null);
+
+  // Only allow horizontal dragging
+  const { transform } = useDrag({
+    dragElem: dragRef,
+    allowedDirections: ["x"]
+  });
+
+  return (
+    <div
+      ref={dragRef}
+      style={{
+        transform: `translateX(${transform.x}px) translateY(${transform.y}px)`
+      }}
+    >
+      Drag me horizontally only!
+    </div>
+  );
+}
+```
+
+You can also restrict to vertical-only dragging by using `allowedDirections: ["y"]`, or allow both directions with `allowedDirections: ["x", "y"]` (which is the default).
 
 ### Dragging Images with object-position
 

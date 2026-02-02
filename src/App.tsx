@@ -3,7 +3,7 @@ import './App.css';
 import useDrag from './useDrag';
 import checkBounds from './checkBounds';
 import checkBgBounds from './checkBgBounds';
-import type { ObjectPositionValues } from './types';
+import type { DragDirections, ObjectPositionValues } from './types';
 
 
 function App() {
@@ -15,6 +15,7 @@ function App() {
   const bound3Ref = useRef<HTMLDivElement>( null );
 
   const [objectPosition, objectPositionSet] = useState<ObjectPositionValues>( "cover" );
+  const [allowedDirections, allowedDirectionsSet] = useState<DragDirections[]>([ "x", "y" ]);
   
   const {
     transform
@@ -22,6 +23,7 @@ function App() {
     dragElem: dragRef,
     boundElem: boundRef,
     checkBounds: checkBounds,
+    allowedDirections,
   });
   const {
     transform: transform2
@@ -43,6 +45,16 @@ function App() {
     objectPositionSet( e.target.value as ObjectPositionValues );
     reset3();
   };
+  const allowedDirectionsChange = ( e: ChangeEvent<HTMLSelectElement> ) => {
+    const options = e.target.options;
+    const values:DragDirections[] = [];
+    for( let i = 0; i < options.length; i++ ){
+      if( options[ i ].selected ){
+        values.push( options[ i ].value as DragDirections );
+      }
+    }
+    allowedDirectionsSet( values );
+  };
 
   const transformString = `translateX(${transform.x}px) translateY(${transform.y}px)`;
   const transform2String = `translateX(${transform2.x}px) translateY(${transform2.y}px)`;
@@ -53,7 +65,23 @@ function App() {
         <h3>useDrag hook</h3>
       </div>
       <div className="group">
-        <h5>Normal Element inside Bounds</h5>
+        <h5>Normal Element inside Bounds. Movement restricted to {allowedDirections.join( ", ")} Axis</h5>
+        <select
+          name="allowedDirections"
+          className="select-styled"
+          value={allowedDirections}
+          onChange={allowedDirectionsChange}
+          multiple
+          style={{
+            marginBottom: 10
+          }}
+          size={3}
+        >
+          <optgroup label="Drag Directions">
+            <option value="x">X Axis</option>
+            <option value="y">Y Axis</option>
+          </optgroup>
+        </select>
         <div className="bound" ref={boundRef}>
           <div
             className="dragme"
@@ -92,6 +120,7 @@ function App() {
       <div className="group">
         <h5>Image Element object-position {objectPosition} inside Bounds</h5>
         <select
+          className="select-styled"
           name="objectposition"
           value={objectPosition}
           onChange={objectPositionChange}

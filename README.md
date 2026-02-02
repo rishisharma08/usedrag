@@ -5,6 +5,7 @@ A React hook for adding drag functionality to HTML elements with optional bounda
 ## Features
 
 - Simple drag-and-drop functionality for any HTML element
+- Touch event support for mobile devices
 - Optional boundary constraints to keep elements within a container
 - Custom boundary checking logic support
 - Built-in "dragging" class for styling during drag operations
@@ -197,9 +198,9 @@ const { transform } = useDrag({
 
 ## How It Works
 
-1. The hook attaches `mousedown`, `mousemove`, and `mouseup` event listeners to track drag operations
+1. The hook attaches mouse (`mousedown`, `mousemove`, `mouseup`) and touch (`touchstart`, `touchmove`, `touchend`) event listeners to track drag operations
 2. During drag, the element receives a `dragging` CSS class
-3. The hook calculates the new position based on mouse movement
+3. The hook calculates the new position based on pointer movement
 4. If `checkBounds` is provided, the position is validated before being applied
 5. The `transform` state is updated with the new x, y coordinates
 6. Apply the transform to your element's style to see the drag effect

@@ -2,6 +2,7 @@ import { useRef, useState, type ChangeEvent } from 'react';
 import useDrag from 'demos/usedrag/useDrag';
 import checkBgBounds from 'demos/usedrag/checkbounds/checkBgBounds';
 import type { ObjectPositionValues } from 'src/types';
+import PageSubHeading from 'src/components/general/PageSubHeading';
 
 function ImageObjectPosition() {
   const drag3Ref = useRef<HTMLImageElement>( null );
@@ -24,9 +25,11 @@ function ImageObjectPosition() {
 
   return (
     <div className="group">
-      <h3>Image Element object-position {objectPosition} inside Bounds</h3>
+      <PageSubHeading
+        className="mt-8"
+      >Image Element object-position {objectPosition} inside Bounds</PageSubHeading>
       <select
-        className="select-styled"
+        className="select-styled mt-2 mb-2"
         name="objectposition"
         value={objectPosition}
         onChange={objectPositionChange}
@@ -44,7 +47,7 @@ function ImageObjectPosition() {
         <img
           className="dragme"
           ref={drag3Ref}
-          src="/attachment.webp"
+          src="/attachment.jpg"
           style={{
             display: "block",
             width: "100%",

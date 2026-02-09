@@ -1,6 +1,7 @@
 import { useRef } from 'react';
 import useDrag from 'demos/usedrag/useDrag';
 import checkBgBounds from 'demos/usedrag/checkbounds/checkBgBounds';
+import PageSubHeading from 'src/components/general/PageSubHeading';
 
 function ImageElementBounds() {
   const drag2Ref = useRef<HTMLImageElement>( null );
@@ -18,15 +19,17 @@ function ImageElementBounds() {
 
   return (
     <div className="group">
-      <h3>Image Element inside Bounds</h3>
+      <PageSubHeading
+        className="mt-8"
+      >Image Element inside Bounds</PageSubHeading>
       <div
-        className="bound"
+        className="bound mt-2"
         ref={bound2Ref}
       >
         <img
           className="dragme"
           ref={drag2Ref}
-          src="/attachment.webp"
+          src="/attachment.jpg"
           style={{
             width: "auto",
             height: "auto",

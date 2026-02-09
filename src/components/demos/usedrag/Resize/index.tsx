@@ -1,10 +1,14 @@
-import { forwardRef, useLayoutEffect, useRef, useCallback, type PropsWithChildren } from "react";
+import { forwardRef, useLayoutEffect, useRef, useCallback, type PropsWithChildren, useEffect, type RefObject } from "react";
 import useDrag from "demos/usedrag/useDrag";
-import type { Dim } from "src/types";
+import type { Dim, Pos } from "src/types";
+import { createCheckBoundsForResizeHandles } from "../checkbounds/checkBoundsForResizeHandles";
 
 interface Props extends PropsWithChildren{
   resizemeStyles?: React.CSSProperties,
-  updateDims?: ( dimension: Dim ) => void
+  updateDims?: ( dimension: Dim ) => void,
+  updateIsResizing?: ( isResizing: boolean, isResizingPrev: boolean ) => void,
+  parentTransform?: Pos,
+  parentRef?: RefObject<HTMLElement>
 }
 const Resize = forwardRef<HTMLDivElement, Props>( ( props, ref ) => {
   const dragTopRef = useRef<HTMLDivElement>( null );
@@ -25,37 +29,53 @@ const Resize = forwardRef<HTMLDivElement, Props>( ( props, ref ) => {
   }, [ref]);
 
   const {
-    transform: transformTop
+    transform: transformTop,
+    isDragging: isDraggingTop,
   } = useDrag({
     dragElem: dragTopRef,
-    boundElem: boundRef,
-    // checkBounds: checkBounds,
+    boundElem: props.parentRef,
+    checkBounds: createCheckBoundsForResizeHandles(props.parentTransform),
     allowedDirections: [ "y" ],
   });
   const {
-    transform: transformBottom
+    transform: transformBottom,
+    isDragging: isDraggingBottom,
   } = useDrag({
     dragElem: dragBottomRef,
-    boundElem: boundRef,
-    // checkBounds: checkBounds,
+    boundElem: props.parentRef,
+    checkBounds: createCheckBoundsForResizeHandles(props.parentTransform),
     allowedDirections: [ "y" ],
   });
   const {
-    transform: transformLeft
+    transform: transformLeft,
+    isDragging: isDraggingLeft,
   } = useDrag({
     dragElem: dragLeftRef,
-    boundElem: boundRef,
-    // checkBounds: checkBounds,
+    boundElem: props.parentRef,
+    checkBounds: createCheckBoundsForResizeHandles(props.parentTransform),
     allowedDirections: [ "x" ],
   });
   const {
-    transform: transformRight
+    transform: transformRight,
+    isDragging: isDraggingRight,
   } = useDrag({
     dragElem: dragRightRef,
-    boundElem: boundRef,
-    // checkBounds: checkBounds,
+    boundElem: props.parentRef,
+    checkBounds: createCheckBoundsForResizeHandles(props.parentTransform),
     allowedDirections: [ "x" ],
   });
+
+  const {updateDims, updateIsResizing} = props;
+
+  const isDraggingPrev = useRef<boolean>( isDraggingTop || isDraggingLeft || isDraggingRight || isDraggingBottom );
+
+  useEffect(()=>{
+    const newIsDragging = isDraggingTop || isDraggingLeft || isDraggingRight || isDraggingBottom;
+    if( updateIsResizing ){
+      updateIsResizing( newIsDragging, isDraggingPrev.current );
+    }
+    isDraggingPrev.current = newIsDragging;
+  }, [isDraggingTop, isDraggingLeft, isDraggingRight, isDraggingBottom, updateIsResizing]);
 
   const transformTopString = transformTop ? `translateX(${transformTop.x}px)` : "";
   const transformBottomString = transformBottom ? `translateX(${transformBottom.x}px)` : `${( props?.resizemeStyles?.height ? `translateY(${props?.resizemeStyles?.height}px)` : "" )}`;
@@ -66,20 +86,22 @@ const Resize = forwardRef<HTMLDivElement, Props>( ( props, ref ) => {
   const width = ( transformRight ? transformRight.x : 0 ) - ( transformLeft ? transformLeft.x : 0 );
 
   useLayoutEffect(()=>{
-    if( props.updateDims ){
-      props.updateDims({
+    if( updateDims ){
+      updateDims({
         width,
         height,
         offsetX: transformLeft ? transformLeft.x : 0,
         offsetY: transformTop ? transformTop.y : 0
       });
     }
-  }, [width, height, transformLeft?.x, transformTop?.y]);
+  }, [width, height, transformLeft?.x, transformTop?.y, updateDims]);
 
   // Combine parent transform with internal resize transforms
-  const parentTransform = props.resizemeStyles?.transform || '';
+  const parentTransformString = props.parentTransform
+    ? `translateX(${props.parentTransform.x}px) translateY(${props.parentTransform.y}px)`
+    : '';
   const internalTransform = `translateY(${transformTop ? transformTop.y : 0}px) translateX(${transformLeft ? transformLeft.x : 0}px)`;
-  const combinedTransform = `${parentTransform} ${internalTransform}`.trim();
+  const combinedTransform = `${parentTransformString} ${internalTransform}`.trim();
 
   return (
     <div

@@ -1,6 +1,7 @@
 import { useRef } from 'react';
 import useDrag from 'demos/usedrag/useDrag';
 import Resize from 'demos/usedrag/Resize';
+import PageSubHeading from 'src/components/general/PageSubHeading';
 
 function ResizeDemo() {
   const dragResizeRef = useRef<HTMLImageElement>( null );
@@ -17,8 +18,9 @@ function ResizeDemo() {
 
   return (
     <div className="group">
-      <h3>Resize</h3>
+      <PageSubHeading>Resize using Drag Handles</PageSubHeading>
       <div
+        className="mt-2"
         ref={dragResizeRef}
         style={{
           width: 200,

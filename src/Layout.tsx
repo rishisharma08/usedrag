@@ -2,6 +2,7 @@ import { Outlet, NavLink } from "react-router";
 import routes from './routeConfig';
 import type { RouteConfig } from './routeConfig';
 import './App.css';
+import Bg from "./components/general/Bg";
 
 function SidebarLinks({ routes, parentPath = '' }: { routes: RouteConfig[], parentPath?: string }) {
   return (
@@ -36,6 +37,16 @@ function Layout(){
 
   return(
     <>
+      <Bg
+        className="pointer-events-none absolute z-0"
+        style={{
+          left: 0,
+          top: 0,
+          width: "500px",
+          height: "350px",
+          opacity: 0.02,
+        }}
+      />
       <aside className="flex-none basis-75 p-2">
         <nav>
           <SidebarLinks routes={navRoutes} />

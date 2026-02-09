@@ -2,6 +2,7 @@ import { useRef, useState, type ChangeEvent } from 'react';
 import useDrag from 'demos/usedrag/useDrag';
 import checkBounds from 'demos/usedrag/checkbounds/checkBounds';
 import type { DragDirections } from 'src/types';
+import PageSubHeading from 'src/components/general/PageSubHeading';
 
 function NormalElementBounds() {
   const dragRef = useRef<HTMLDivElement>( null );
@@ -32,16 +33,15 @@ function NormalElementBounds() {
 
   return (
     <div className="group">
-      <h3>Normal Element inside Bounds. Movement restricted to {allowedDirections.join( ", ")} Axis</h3>
+      <PageSubHeading
+        className="mt-8"
+      >Normal Element inside Bounds. Movement restricted to {allowedDirections.join( ", ")} Axis</PageSubHeading>
       <select
         name="allowedDirections"
-        className="select-styled"
+        className="select-styled mt-2 mb-2"
         value={allowedDirections}
         onChange={allowedDirectionsChange}
         multiple
-        style={{
-          marginBottom: 10
-        }}
         size={3}
       >
         <optgroup label="Drag Directions">

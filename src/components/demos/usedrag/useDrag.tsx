@@ -18,6 +18,7 @@ const useDrag = ({
   checkBounds = checkBoundsDefault,
   allowedDirections = [ "x", "y" ],
 }: Props) => {
+  const [isDragging, isDraggingSet] = useState<boolean>(false);
   const isDraggingRef = useRef<boolean>(false);
   const mouseDownTransformRef = useRef<Pos>({x: 0, y:0});
   const mouseDownPosRef = useRef<Pos>({x: 0, y:0});
@@ -51,23 +52,32 @@ const useDrag = ({
           x: allowedDirections.includes( "x" ) ? delta.x + clientX : mouseDownTransformRef.current.x,
           y: allowedDirections.includes( "y" ) ? delta.y + clientY : mouseDownTransformRef.current.y,
         };
+        let finalPos = newPos;
         if( checkBounds ){
-          transformSet( checkBounds( dragElem.current, newPos, delta, boundElem ? boundElem.current : null ) );
-        }else{
-          transformSet( newPos );
+          finalPos = checkBounds( dragElem.current, newPos, delta, boundElem ? boundElem.current : null );
         }
+        // Re-apply directional constraints after checkBounds to ensure locked directions stay locked
+        finalPos = {
+          x: allowedDirections.includes( "x" ) ? finalPos.x : mouseDownTransformRef.current.x,
+          y: allowedDirections.includes( "y" ) ? finalPos.y : mouseDownTransformRef.current.y,
+        };
+        transformSet( finalPos );
       }
     }
   }, [dragElem, boundElem, checkBounds, allowedDirections]);
 
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const handleMouseUp = useCallback(() => {
     isDraggingRef.current = false;
+    isDraggingSet(()=>false);
     dragElem.current?.classList.remove( "dragging" );
-  }, [dragElem.current?.classList]);
+  }, [dragElem]);
 
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const handleMouseDown = useCallback(( e: MouseEvent | TouchEvent ) => {
     e.stopPropagation();
     isDraggingRef.current = true;
+    isDraggingSet(()=>true);
     if( "clientX" in e ){
       mouseDownPosRef.current = {
         x: e.clientX,
@@ -81,7 +91,7 @@ const useDrag = ({
     }
     mouseDownTransformRef.current = transformRef.current;
     dragElem.current?.classList.add( "dragging" );
-  }, [dragElem.current?.classList]);
+  }, [dragElem]);
 
   const reset = () => {
     transformSet({x: 0, y: 0});
@@ -125,13 +135,13 @@ const useDrag = ({
   useEffect(() => {
     const element = dragElem.current;
     if( element ){
-      element.addEventListener( "mousedown", handleMouseDown, {passive: true} );
-      window.addEventListener( "mousemove", handleMouseMove, {passive: true} );
-      window.addEventListener( "mouseup", handleMouseUp, {passive: true} );
+      element.addEventListener( "mousedown", handleMouseDown );
+      window.addEventListener( "mousemove", handleMouseMove );
+      window.addEventListener( "mouseup", handleMouseUp );
       element.addEventListener( "touchstart", handleMouseDown, {passive: true} );
-      element.addEventListener( "touchmove", handleMouseMove, {passive: true} );
-      window.addEventListener( "touchend", handleMouseUp, {passive: true} );
-      window.addEventListener( "touchcancel", handleMouseUp, {passive: true} );
+      element.addEventListener( "touchmove", handleMouseMove, {passive: false} );
+      window.addEventListener( "touchend", handleMouseUp );
+      window.addEventListener( "touchcancel", handleMouseUp );
       allowedDirections.forEach(( dir )=>{
         element.classList.add( `drag-elem` );
         element.classList.add( `drag-direction-${dir}` );
@@ -156,7 +166,8 @@ const useDrag = ({
 
   return {
     transform,
-    reset
+    reset,
+    isDragging,
   };
 };
 

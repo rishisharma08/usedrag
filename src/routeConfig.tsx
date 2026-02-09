@@ -6,9 +6,12 @@ import NormalElementBounds from 'demos/usedrag/components/NormalElementBounds';
 import ImageElementBounds from 'demos/usedrag/components/ImageElementBounds';
 import ImageObjectPosition from 'demos/usedrag/components/ImageObjectPosition';
 import Layout from 'src/Layout.tsx';
+// import UseDragPage from './components/demos/usedrag';
+import { Navigate } from 'react-router';
 
 export interface RouteConfig {
   path?: string;
+  index?: boolean;
   element?: React.ReactElement;
   title?: string;
   handle?: { title?: string };
@@ -30,34 +33,45 @@ const routeConfig: RouteConfig[] = [
         title: "Demos",
         children: [
           {
-            path: "imagecrop",
-            element: <ImageCropDemo />,
-            title: "Image Crop",
-            handle: { title: "Image Crop" }
-          },
-          {
-            path: "resize",
-            element: <ResizeDemo />,
-            title: "Resize",
-            handle: { title: "Resize" }
-          },
-          {
-            path: "dragwithbounds",
-            element: <NormalElementBounds />,
-            title: "Drag with Bounds",
-            handle: { title: "Drag with Bounds" }
-          },
-          {
-            path: "dragimagewithbounds",
-            element: <ImageElementBounds />,
-            title: "Drag Image with Bounds",
-            handle: { title: "Drag Image with Bounds" }
-          },
-          {
-            path: "dragimagewithobjectposition",
-            element: <ImageObjectPosition />,
-            title: "Drag Image with Object Position",
-            handle: { title: "Drag Image with Object Position" }
+            path: "usedrag",
+            title: "Use Drag",
+            handle: { title: "Use Drag" },
+            children: [
+              {
+                index: true,
+                element: <Navigate to="imagecrop" replace/>
+              },
+              {
+                path: "imagecrop",
+                element: <ImageCropDemo />,
+                title: "Image Crop",
+                handle: { title: "Image Crop" }
+              },
+              {
+                path: "resize",
+                element: <ResizeDemo />,
+                title: "Resize",
+                handle: { title: "Resize" }
+              },
+              {
+                path: "dragwithbounds",
+                element: <NormalElementBounds />,
+                title: "Drag with Bounds",
+                handle: { title: "Drag with Bounds" }
+              },
+              {
+                path: "dragimagewithbounds",
+                element: <ImageElementBounds />,
+                title: "Drag Image with Bounds",
+                handle: { title: "Drag Image with Bounds" }
+              },
+              {
+                path: "dragimagewithobjectposition",
+                element: <ImageObjectPosition />,
+                title: "Drag Image with Object Position",
+                handle: { title: "Drag Image with Object Position" }
+              }
+            ]
           }
         ]
       }

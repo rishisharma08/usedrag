@@ -1,4 +1,5 @@
 import { Outlet, useMatches } from 'react-router';
+import PageHeading from './components/general/PageHeading';
 
 
 function Demos() {
@@ -9,11 +10,12 @@ function Demos() {
   return (
     <div id="app">
       <div className="group">
-        {title && <h2>{title}</h2>}
+        {title && <PageHeading
+        >{title}</PageHeading>}
       </div>
       <Outlet/>
     </div>
   )
 }
 
-export default Demos
+export default Demos;

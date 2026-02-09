@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inconsolata:wght@200..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Special+Elite&display=swap');
 
 #root {
   max-width: 1280px;
@@ -8,55 +8,23 @@
   width: 100%;
   display: flex;
   gap: calc( 2 * var( --spacing ) );
-  font-family: "Montserrat", sans-serif;
+  /* font-family: "Montserrat", sans-serif; */
+  /* font-family: "Special Elite", system-ui; */
+  font-family: "Inconsolata", monospace;
+  letter-spacing: -0.5px;
   font-optical-sizing: auto;
   font-weight: 400;
   font-style: normal;
+  position: relative;
 }
-/* aside.sidebar{
-  flex: 0 0 300px;
-  padding: var( --spacing );
+:root{
+  --resizehandle-size: 16px;
 }
-main{
-  flex: 1;
-  padding: var( --spacing );
-} */
-/* nav ul{
-  list-style: none;
-  padding: 0;
-}
-nav ul.is-parent{
-  padding-left: var( --spacing );
-}
-nav ul .is-active{
-  font-weight: bold;
-  color: #007bff;
-} */
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
 .group{
   margin-bottom: 40px;
-  margin-left: auto;
-  margin-right: auto;
+  /* margin-left: auto;
+  margin-right: auto; */
   width: fit-content;
-}
-.group > h5,
-.group > h4,
-.group > h3{
-  /* font-weight: normal; */
 }
 .bound{
   width: 500px;
@@ -109,17 +77,19 @@ select:not([multiple]){
   user-select: none;
 }
 .resizedragme{
-  width: 10px;
-  height: 10px;
-  background: rgba(255, 192, 250, 0.5);
+  width: var( --resizehandle-size );
+  height: var( --resizehandle-size );
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur( 1px );
+  border: 2px solid white;
   user-select: none;
   position: absolute;
   border-radius: 50%;
 }
 .resizedragme-container{
   position: absolute;
-  width: 10px;
-  height: 10px;
+  width: var( --resizehandle-size );
+  height: var( --resizehandle-size );
 }
 .resizedragme-top-container{
   top: 0;

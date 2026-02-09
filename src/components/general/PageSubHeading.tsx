@@ -2,8 +2,8 @@ import type { HtmlHTMLAttributes } from "react";
 
 function PageSubHeading( props: HtmlHTMLAttributes <HTMLHeadingElement> ){
   const {className = "", ...others} = props;
-  return <h3
-    className={`${className}`}
+  return <h2
+    className={`text-lg font-medium ${className}`}
     {...others}
   />;
 }

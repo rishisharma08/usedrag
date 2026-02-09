@@ -17,7 +17,7 @@ function SidebarLinks({ routes, parentPath = '' }: { routes: RouteConfig[], pare
             <NavLink
               to={fullPath}
               className={({ isActive }) =>
-                isActive ? "font-bold text-blue-600" : "hover:text-blue-500"
+                isActive ? "font-bold" : ""
               }
             >
               {route.title}

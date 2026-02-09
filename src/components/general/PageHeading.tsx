@@ -2,8 +2,8 @@ import type { HtmlHTMLAttributes } from "react";
 
 function PageHeading( props: HtmlHTMLAttributes <HTMLHeadingElement> ){
   const {className = "", ...others} = props;
-  return <h2
-    className={`font-bold text-lg ${className}`}
+  return <h1
+    className={`font-bold text-2xl ${className}`}
     {...others}
   />;
 }

@@ -4,7 +4,7 @@ function App() {
   return (
     <div id="app">
       <div className="group">
-        <PageHeading>My site</PageHeading>
+        <PageHeading>My Demo site</PageHeading>
       </div>
     </div>
   )

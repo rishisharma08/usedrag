@@ -20,11 +20,24 @@ a {
   /* color: rgba( 0, 0, 0, 0.70 ); */
   /* text-decoration: underline; */
 }
-a:hover {
-  /* color: #000; */
-  color: var(--color-gray-900 );
+nav a.is-active {
+  font-weight: var(--font-weight-bold);
 }
-
+nav a:hover {
+  color: var(--color-gray-900);
+}
+main a, .accent-color {
+  color: var(--color-red-700);
+}
+main a:hover, a.accent-color:hover{
+  color: var(--color-red-900);
+}
+.bg-accent-color{
+  background-color: var(--color-red-700);
+}
+.stroke-accent-color{
+  stroke: var(--color-red-700);
+}
 body {
   margin: 0;
   display: flex;

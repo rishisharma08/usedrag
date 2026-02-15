@@ -8,13 +8,15 @@ function Demos() {
   const title = (currentRoute?.handle as { title?: string })?.title;
 
   return (
-    <div id="app">
+    <>
       <div className="group">
         {title && <PageHeading
-        >{title}</PageHeading>}
+        >
+          {title}
+        </PageHeading>}
       </div>
       <Outlet/>
-    </div>
+    </>
   )
 }
 

@@ -7,7 +7,10 @@ import ImageElementBounds from 'demos/usedrag/components/ImageElementBounds';
 import ImageObjectPosition from 'demos/usedrag/components/ImageObjectPosition';
 import Layout from 'src/Layout.tsx';
 // import UseDragPage from './components/demos/usedrag';
-import { Navigate } from 'react-router';
+// import { Navigate } from 'react-router';
+import DemosIndex from './components/demos';
+import CssEasing from './components/demos/usedrag/components/CssEasing';
+import UseDragIndex from './components/demos/usedrag/UseDragIndex';
 
 export interface RouteConfig {
   path?: string;
@@ -33,13 +36,26 @@ const routeConfig: RouteConfig[] = [
         title: "Demos",
         children: [
           {
+            index: true,
+            element: <DemosIndex />,
+            handle: { title: "These are all my Demos" }
+          },
+          {
             path: "usedrag",
             title: "Use Drag",
             handle: { title: "Use Drag" },
             children: [
               {
                 index: true,
-                element: <Navigate to="imagecrop" replace/>
+                // element: <Navigate to="imagecrop" replace/>
+                element: <UseDragIndex/>,
+                handle: { title: "Use Drag" },
+              },
+              {
+                path: "csseasing",
+                element: <CssEasing />,
+                title: "CSS Easing",
+                handle: { title: "CSS Easing" }
               },
               {
                 path: "imagecrop",
@@ -74,6 +90,11 @@ const routeConfig: RouteConfig[] = [
             ]
           }
         ]
+      },
+      {
+        path: "*",
+        element: <App />,
+        title: "Home"
       }
     ]
   }

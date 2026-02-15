@@ -6,6 +6,7 @@ interface Props {
   boundElem?: RefObject<HTMLElement | null>,
   checkBounds?: ( dragElem: HTMLElement, pos: Pos, delta: Pos, boundElem?: HTMLElement | null ) => Pos,
   allowedDirections?: DragDirections[],
+  startingPos?: Pos,
 }
 
 const checkBoundsDefault = ( dragElem: HTMLElement, pos: Pos ) => {
@@ -17,6 +18,7 @@ const useDrag = ({
   boundElem,
   checkBounds = checkBoundsDefault,
   allowedDirections = [ "x", "y" ],
+  startingPos,
 }: Props) => {
   const [isDragging, isDraggingSet] = useState<boolean>(false);
   const isDraggingRef = useRef<boolean>(false);
@@ -28,8 +30,8 @@ const useDrag = ({
 
   // Keep ref in sync with state
   useEffect(() => {
-    transformRef.current = transform || {x: 0, y: 0};
-  }, [transform]);
+    transformRef.current = transform || startingPos || {x: 0, y: 0};
+  }, [transform, startingPos]);
 
   const handleMouseMove = useCallback(( e: MouseEvent | TouchEvent ) => {
     if( isDraggingRef.current ){

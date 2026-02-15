@@ -19,6 +19,7 @@ export interface RouteConfig {
   title?: string;
   handle?: { title?: string };
   children?: RouteConfig[];
+  showInMenu?: boolean;
 }
 
 const routeConfig: RouteConfig[] = [
@@ -94,7 +95,8 @@ const routeConfig: RouteConfig[] = [
       {
         path: "*",
         element: <App />,
-        title: "Home"
+        title: "Home",
+        showInMenu: false,
       }
     ]
   }

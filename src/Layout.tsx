@@ -19,6 +19,9 @@ function SidebarLinks({ routes, parentPath = '', onLinkClick }: SidebarLinksProp
     >
       {routes.filter(route => route.title).map((route) => {
         const fullPath = route.path === '/' ? '/' : parentPath + '/' + route.path;
+        if( "showInMenu" in route && !route.showInMenu ){
+          return null;
+        }
         return (
           <li key={fullPath}>
             <NavLink

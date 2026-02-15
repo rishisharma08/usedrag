@@ -3,6 +3,7 @@ import useDrag from 'demos/usedrag/useDrag';
 import checkBgBounds from 'demos/usedrag/checkbounds/checkBgBounds';
 import type { ObjectPositionValues } from 'src/types';
 import PageSubHeading from 'src/components/general/PageSubHeading';
+import Select from 'src/components/general/Select';
 
 function ImageObjectPosition() {
   const drag3Ref = useRef<HTMLImageElement>( null );
@@ -28,8 +29,8 @@ function ImageObjectPosition() {
       <PageSubHeading
         className="mt-8"
       >Image Element object-position {objectPosition} inside Bounds</PageSubHeading>
-      <select
-        className="select-styled mt-2 mb-2"
+      <Select
+        className="mt-2 mb-2"
         name="objectposition"
         value={objectPosition}
         onChange={objectPositionChange}
@@ -39,7 +40,7 @@ function ImageObjectPosition() {
       >
         <option value="cover">Cover</option>
         <option value="contain">Contain</option>
-      </select>
+      </Select>
       <div
         className="bound"
         ref={bound3Ref}

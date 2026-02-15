@@ -4,12 +4,7 @@
   max-width: 1280px;
   margin: 0 auto;
   padding: calc( 2 * var( --spacing ) );
-  /* text-align: center; */
   width: 100%;
-  display: flex;
-  gap: calc( 2 * var( --spacing ) );
-  /* font-family: "Montserrat", sans-serif; */
-  /* font-family: "Special Elite", system-ui; */
   font-family: "Inconsolata", monospace;
   letter-spacing: -0.5px;
   font-optical-sizing: auto;
@@ -54,19 +49,6 @@
 }
 .group h5{
   margin-bottom: 10px;
-}
-select.select-styled{
-  width: 100%;
-  padding: 10px;
-  cursor: pointer;
-  border: 1px solid rgba( 0,0,0,0.2);
-}
-select:not([multiple]){
-  appearance: none;
-  background-image: url( "/down-arrow.svg" );
-  background-position: calc(100% - 10px) 50%;
-  background-size: 30px;
-  background-repeat: no-repeat;
 }
 .resizeme{
   background: rgba(255, 192, 203, 0.2);

@@ -47,7 +47,9 @@ function Layout(){
   const navRoutes = routes[0]?.children || [];
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   return(
-    <>
+    <div
+      className="dark:text-gray-300 flex gap-4"
+    >
       <Bg
         className="pointer-events-none absolute z-0 left-0 top-0 w-1/2 sm:w-125"
         style={{
@@ -57,7 +59,7 @@ function Layout(){
         }}
       />
       <aside
-        className={`flex-none p-0 basis-0 overflow-hidden absolute right-0 h-full bg-white transition-all duration-300 sm:basis-75 sm:p-2 sm:relative sm:w-auto sm:bg-transparent z-10 ${isMenuOpen ? 'w-full p-2' : 'w-0'}`}
+        className={`flex-none p-0 basis-0 overflow-hidden absolute right-0 h-full bg-white dark:bg-gray-900 transition-all duration-300 sm:basis-75 sm:p-2 sm:relative sm:w-auto sm:bg-transparent z-10 ${isMenuOpen ? 'w-full p-2' : 'w-0'}`}
       >
         <nav>
           <SidebarLinks routes={navRoutes} onLinkClick={() => setIsMenuOpen(false)} />
@@ -70,7 +72,7 @@ function Layout(){
         />
         <Outlet/>
       </main>
-    </>
+    </div>
   )
 };
 

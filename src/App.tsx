@@ -6,7 +6,7 @@ import TextLabel from "./components/general/TextLabel"
 
 function App() {
   return (
-    <div id="app">
+    <>
       <div className="group">
         <PageHeading>Demo site of <span className="accent-color">Rishi Sharma</span></PageHeading>
       </div>
@@ -93,7 +93,7 @@ function App() {
           </div>
         </section>
       </div>
-    </div>
+    </>
   )
 }
 

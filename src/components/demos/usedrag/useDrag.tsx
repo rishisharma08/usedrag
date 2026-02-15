@@ -36,6 +36,7 @@ const useDrag = ({
 
   const handleMouseMove = useCallback(( e: MouseEvent | TouchEvent ) => {
     if( isDraggingRef.current ){
+      e.stopPropagation();
       if( dragElem && dragElem.current ){
         const delta: Pos = {
           x: mouseDownTransformRef.current.x - mouseDownPosRef.current.x,

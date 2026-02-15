@@ -1,8 +1,15 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import PageSubHeading from "src/components/general/PageSubHeading";
 import useDrag from "../useDrag";
-import type { Pos } from "src/types";
+import type { Dim, Pos } from "src/types";
+import Select from "src/components/general/Select";
 const size = 400;
+
+function DragHandle(){
+  return <div
+    className="size-full bg-black -translate-x-1/2 -translate-y-1/2 border border-white"
+  />;
+}
 
 function CssEasing(){
   const boundRef = useRef<HTMLDivElement>( null );
@@ -33,13 +40,26 @@ function CssEasing(){
     // checkBounds: checkBounds,
   });
   const [property, propertySet] = useState( "transform" );
-
+  const sampleDivRef = useRef<HTMLDivElement>( null );
+  const [sampleDivDims, sampleDivDimsSet] = useState<Dim>({
+    width: 0, height: 0
+  });
   const isDragging = isDragging1 || isDragging2;
   const transformString1 = transform1 ? `translateX(${transform1.x}px) translateY(${transform1.y}px)` : `translateX(${cp1.x}px) translateY(${cp1.y}px)`;
   const transformString2 = transform2 ? `translateX(${transform2.x}px) translateY(${transform2.y}px)` : `translateX(${cp2.x}px) translateY(${cp2.y}px)`;
+
   const transitionTimingFunction = useMemo(()=>{
     return `cubic-bezier(${( ( transform1 ? transform1.x : cp1.x ) / size ).toFixed(2)}, ${( ( size - ( transform1 ? transform1.y : cp1.y ) ) / size ).toFixed(2)}, ${( ( transform2 ? transform2.x : cp2.x ) / size ).toFixed(2)}, ${( ( size - ( transform2 ? transform2.y : cp2.y ) ) / size ).toFixed(2)})`;
   }, [ isDragging ]);
+
+  useEffect(()=>{
+    if( sampleDivRef.current ){
+      sampleDivDimsSet({
+        width: sampleDivRef.current.offsetWidth,
+        height: sampleDivRef.current.offsetHeight,
+      });
+    }
+  }, [sampleDivRef]);
 
   return (
     <div className="group">
@@ -63,9 +83,7 @@ function CssEasing(){
               transform: transformString1,
             }}
           >
-            <div
-              className="size-full bg-black -translate-x-1/2 -translate-y-1/2"
-            />
+            <DragHandle />
           </div>
           <div
             className="w-2 aspect-square select-none cursor-pointer absolute top-0 left-0"
@@ -74,12 +92,10 @@ function CssEasing(){
               transform: transformString2,
             }}
           >
-            <div
-              className="size-full bg-black -translate-x-1/2 -translate-y-1/2"
-            />
+            <DragHandle />
           </div>
           <svg
-            className="size-full absolute z-0 pointer-events-none overflow-visible"
+            className="size-full absolute -z-1 pointer-events-none overflow-visible dark:bg-white"
           >
             <path
               className="stroke-accent-color"
@@ -110,24 +126,24 @@ function CssEasing(){
         </div>
         <div>
           <p className="text-xs">Select a Property to see a demo</p>
-          <select
-            className="select-styled"
+          <Select
+            // className="select-styled"
             onChange={( e )=>{
               propertySet( e.target.value )
             }}
           >
             <option value="transform">Transform</option>
             <option value="opacity">Opacity</option>
-          </select>
+          </Select>
         </div>
         <div
-          // key={`${animationKey}`}
-          className="size-20 bg-black"
+          ref={sampleDivRef}
+          className="size-20 bg-gray-300 border border-white"
           style={{
             transitionProperty: isDragging ? "none" : property,
             transitionDuration: "1000ms",
             transitionTimingFunction: transitionTimingFunction,
-            ...( property === "transform" ? {transform: `translateX(${isDragging ? 0 : size}px)`} :{} ),
+            ...( property === "transform" ? {transform: `translateX(${ ( isDragging ? 0 : size ) - sampleDivDims.width }px)`} :{} ),
             ...( property === "opacity" ? {opacity: `${isDragging ? 0 : 1}`} :{} ),
           }}
         />

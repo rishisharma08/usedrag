@@ -3,6 +3,7 @@ import useDrag from 'demos/usedrag/useDrag';
 import checkBounds from 'demos/usedrag/checkbounds/checkBounds';
 import type { DragDirections } from 'src/types';
 import PageSubHeading from 'src/components/general/PageSubHeading';
+import Select from 'src/components/general/Select';
 
 function NormalElementBounds() {
   const dragRef = useRef<HTMLDivElement>( null );
@@ -36,9 +37,9 @@ function NormalElementBounds() {
       <PageSubHeading
         className="mt-8"
       >Normal Element inside Bounds. Movement restricted to {allowedDirections.join( ", ")} Axis</PageSubHeading>
-      <select
+      <Select
         name="allowedDirections"
-        className="select-styled mt-2 mb-2"
+        className="mt-2 mb-2 w-auto"
         value={allowedDirections}
         onChange={allowedDirectionsChange}
         multiple
@@ -48,7 +49,7 @@ function NormalElementBounds() {
           <option value="x">X Axis</option>
           <option value="y">Y Axis</option>
         </optgroup>
-      </select>
+      </Select>
       <div className="bound" ref={boundRef}>
         <div
           className="dragme"

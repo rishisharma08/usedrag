@@ -3,7 +3,19 @@ import * as THREE from 'three';
 import { Canvas, useFrame, useLoader } from '@react-three/fiber';
 import { SVGLoader, type SVGResult } from 'three/addons/loaders/SVGLoader.js';
 import { twMerge } from 'tailwind-merge';
+import type { Pos } from 'src/types';
+import Button from './Button';
 
+interface DeviceOrientationEventiOS extends DeviceOrientationEvent {
+  requestPermission?: () => Promise<'granted' | 'denied'>;
+}
+
+interface MultiLayerSVGProps {
+  url: string,
+  mousePos: React.RefObject<Pos>,
+  tilts: React.RefObject<Pos>,
+  isMobile: React.RefObject<boolean>,
+}
 // Define how fast each layer moves
 const LAYER_SPEEDS: Record<string, number> = {
   'default': 1,  // Slowest (deepest)
@@ -13,7 +25,13 @@ const LAYER_SPEEDS: Record<string, number> = {
   'car': 2.5,  // car
 };
 
-const MultiLayerSVG: React.FC<{ url: string, mousePos: {x: number, y: number} }> = ({ url, mousePos }) => {
+const MultiLayerSVG = (props: MultiLayerSVGProps) => {
+  const {
+    url,
+    mousePos,
+    isMobile,
+    tilts,
+  } = props;
   const groupRef = useRef<THREE.Group>(null);
   const svgData = useLoader(SVGLoader, url) as SVGResult;
 
@@ -45,7 +63,10 @@ const MultiLayerSVG: React.FC<{ url: string, mousePos: {x: number, y: number} }>
 
   useFrame((state) => {
     // const { x, y } = state.pointer;
-    const { x, y } = mousePos;
+    let { x, y } = mousePos.current!;
+    if( isMobile.current ){
+      ({x, y} = tilts.current!);
+    }
     const time = state.clock.getElapsedTime();
 
     layers.forEach((layer, i) => {
@@ -98,18 +119,87 @@ interface Bg404Props extends HtmlHTMLAttributes<HTMLDivElement> {
 
 export const Bg404 = ( props: Bg404Props ) => {
   const { className = "", ...others} = props;
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const mousePos = useRef<Pos>({ x: 0, y: 0 });
+  const tilts = useRef<Pos>({ x: 0, y: 0 });
+  const isMobile = useRef( false );
+  const requestTiltRef = useRef<(() => void) | null>(null);
+
+  // Detect if iOS 13+ permission is needed (only runs once on mount)
+  const needsPermission = typeof window !== 'undefined' &&
+    window.DeviceOrientationEvent &&
+    typeof (DeviceOrientationEvent as unknown as DeviceOrientationEventiOS).requestPermission === 'function';
+
+  const [showPermissionButton, setShowPermissionButton] = useState(needsPermission);
+
   useEffect(() => {
+    let tiltListenersAdded = false;
     const handleMouseMove = (event: MouseEvent) => {
       // Convert to normalized device coordinates (-1 to +1)
       const x = (event.clientX / window.innerWidth) * 2 - 1;
       const y = -(event.clientY / window.innerHeight) * 2 + 1;
-      setMousePos({ x, y });
+      mousePos.current = { x, y };
+    };
+
+    const handleOrientation = ( e: DeviceOrientationEvent ) => {
+      isMobile.current = true;
+      tilts.current.x = ( e.gamma || 0 ) / 90;
+      tilts.current.y = ( e.beta || 0 ) / 90;
+    };
+
+    const addOrientationListener = () => {
+      if (!tiltListenersAdded) {
+        window.addEventListener( "deviceorientation", handleOrientation );
+        tiltListenersAdded = true;
+      }
+    };
+
+    const requestTilt = () => {
+      const RequestEvent = DeviceOrientationEvent as unknown as DeviceOrientationEventiOS;
+      if( typeof RequestEvent.requestPermission === "function" ){
+        // iOS 13+ - requires user gesture
+        RequestEvent.requestPermission()
+          .then(( permission )=>{
+            if( permission === "granted" ){
+              addOrientationListener();
+              setShowPermissionButton(false);
+            } else {
+              setShowPermissionButton(false);
+            }
+          })
+          .catch(()=>{
+            // Permission denied or error
+            setShowPermissionButton(false);
+          });
+      }else{
+        // Android or older browsers - no permission needed
+        // Only add listener on touch-enabled devices
+        if ('ontouchstart' in window) {
+          addOrientationListener();
+        }
+      }
     };
 
     window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+
+    // Check if device orientation is available
+    if (window.DeviceOrientationEvent) {
+      if( needsPermission ){
+        // iOS 13+ - store requestTilt for button click
+        requestTiltRef.current = requestTilt;
+      } else {
+        // Android or older browsers - request immediately
+        requestTilt();
+      }
+    }
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      if( tiltListenersAdded ){
+        window.removeEventListener( "deviceorientation", handleOrientation );
+      }
+    };
   }, []);
+
   return (
     <div
       className={twMerge( "", className )}
@@ -123,9 +213,34 @@ export const Bg404 = ( props: Bg404Props ) => {
         }}
       >
         <Suspense fallback={null}>
-          <MultiLayerSVG url={`${import.meta.env.BASE_URL}bg404.svg`} mousePos={mousePos}/>
+          <MultiLayerSVG
+            url={`${import.meta.env.BASE_URL}bg404.svg`}
+            mousePos={mousePos}
+            isMobile={isMobile}
+            tilts={tilts}
+          />
         </Suspense>
       </Canvas>
+
+      {/* iOS 13+ Permission Button */}
+      {showPermissionButton && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm pointer-events-auto">
+          <div className="bg-white dark:bg-gray-900 rounded-lg p-6 shadow-xl max-w-sm mx-4 border border-gray-200 dark:border-gray-700">
+            <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-white font-mono">
+              Enable Motion Controls
+            </h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 font-mono">
+              Allow device orientation to control the parallax effect by tilting your device.
+            </p>
+            <Button
+              onClick={() => requestTiltRef.current?.()}
+              className="w-full"
+            >
+              Enable
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

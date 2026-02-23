@@ -16,7 +16,7 @@ interface MultiLayerSVGProps {
   tilts: React.RefObject<Pos>,
   isMobile: React.RefObject<boolean>,
 }
-// Define how fast each layer moves
+// speeds for each group
 const LAYER_SPEEDS: Record<string, number> = {
   'default': 1,  // Slowest (deepest)
   'bg-layer': 0.5,  // Slowest (deepest)
@@ -51,12 +51,11 @@ const MultiLayerSVG = (props: MultiLayerSVGProps) => {
         shapes: SVGLoader.createShapes(path),
         color: path.color,
         speed,
-        groupId, // Store the groupId to identify the car later
+        groupId,
       };
     });
   }, [svgData]);
 
-  // Create stable refs for each layer (initialize once with proper length)
   const layerRefs = useRef<(THREE.Group | null)[]>(
     Array(svgData.paths.length).fill(null)
   );
@@ -72,16 +71,14 @@ const MultiLayerSVG = (props: MultiLayerSVGProps) => {
     layers.forEach((layer, i) => {
       const layerGroup = layerRefs.current[i];
       if (layerGroup) {
-        // Each layer calculates its own target based on its unique speed factor
-        // Multiply by a larger factor to make the parallax effect visible
-        const parallaxScale = isMobile.current ? 30 : 20; // Adjust this value to control parallax intensity
+        const parallaxScale = isMobile.current ? 30 : 20; // Adjust this value to control parallax intensity - higher for mobile cuz why not
         const targetX = x * layer.speed * parallaxScale;
         let targetY = -y * layer.speed * parallaxScale; // Negative Y for natural movement
 
         // Add bounce animation to the car
         if (layer.groupId === 'car') {
-          const bounceAmplitude = 5; // Height of the bounce
-          const bounceSpeed = 18; // Speed of the bounce (higher = faster)
+          const bounceAmplitude = 5; // height of the bounce
+          const bounceSpeed = 18; // speed of the bounce
           const bounce = Math.sin(time * bounceSpeed) * bounceAmplitude;
           targetY += bounce;
         }
@@ -95,7 +92,7 @@ const MultiLayerSVG = (props: MultiLayerSVGProps) => {
   return (
     <group
       ref={groupRef}
-      scale={isMobile.current ? 0.0160 : 0.18}
+      scale={isMobile.current ? 0.016 : 0.018}
       rotation={[Math.PI, 0, 0]}
       position={ isMobile.current ? [-9.5, 3.50, 0]: [-11, 4.75, 0] } // Center the SVG: -(1200/2)*0.01, -(675/2)*0.01
     >
@@ -198,7 +195,7 @@ export const Bg404 = ( props: Bg404Props ) => {
         window.removeEventListener( "deviceorientation", handleOrientation );
       }
     };
-  }, []);
+  }, [needsPermission]);
 
   return (
     <div
